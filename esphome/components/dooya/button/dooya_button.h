@@ -25,5 +25,10 @@ class FactoryResetButton : public DooyaButton {
   void press_action() override;
 };
 
+class ChangeAddressButton : public DooyaButton {
+ public:
+  void press_action() override;
+};
+
 }  // namespace dooya
 }  // namespace esphome

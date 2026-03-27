@@ -145,11 +145,24 @@ button:
     type: get_status
     name: Dooya Curtain Get Status
   - platform: dooya
+    type: change_address
+    name: Dooya Curtain Change Address
+  - platform: dooya
     type: clear_positioning
     name: Dooya Curtain Clear Positioning
   - platform: dooya
     type: factory_reset
     name: Dooya Curtain Factory Reset
+
+# Optional address change helper entities.
+text:
+  - platform: dooya
+    name: Dooya Curtain Address Input
+    mode: TEXT
+
+text_sensor:
+  - platform: dooya
+    name: Dooya Curtain Address Change Status
 
 switch:
   - platform: dooya

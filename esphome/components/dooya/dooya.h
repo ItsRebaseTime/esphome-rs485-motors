@@ -1,6 +1,7 @@
 #pragma once
 
 #include <queue>
+#include <string>
 
 #include "esphome/core/component.h"
 #include "esphome/components/cover/cover.h"
@@ -11,6 +12,12 @@
 #endif
 #ifdef USE_BUTTON
 #include "esphome/components/button/button.h"
+#endif
+#ifdef USE_TEXT
+#include "esphome/components/text/text.h"
+#endif
+#ifdef USE_TEXT_SENSOR
+#include "esphome/components/text_sensor/text_sensor.h"
 #endif
 #ifdef USE_SWITCH
 #include "esphome/components/switch/switch.h"
@@ -52,6 +59,10 @@ class DooyaCover : public cover::Cover, public Component, public uart_multi::UAR
   SUB_BUTTON(get_status)
   SUB_BUTTON(clear_positioning)
   SUB_BUTTON(factory_reset)
+  SUB_BUTTON(change_address)
+#endif
+#ifdef USE_TEXT_SENSOR
+  SUB_TEXT_SENSOR(address_change_status)
 #endif
 #ifdef USE_SWITCH
   SUB_SWITCH(invert_direction)
@@ -70,6 +81,10 @@ class DooyaCover : public cover::Cover, public Component, public uart_multi::UAR
   void on_uart_multi_byte(uint8_t byte) override;
   cover::CoverTraits get_traits() override;
   void send_command(const uint8_t *data, uint8_t len);
+  void handle_change_address_button_press();
+#ifdef USE_TEXT
+  void set_address_change_text(text::Text *text) { this->address_change_text_ = text; }
+#endif
   std::queue<std::tuple<uint8_t, uint32_t>> read_requests;
   uint8_t current_write_payload;
 
@@ -78,10 +93,25 @@ class DooyaCover : public cover::Cover, public Component, public uart_multi::UAR
   void process_read_response_();
   void process_write_response_();
   void process_control_response_();
+  bool parse_address_change_input_(uint8_t &id_l, uint8_t &id_h, std::string &error) const;
+  void send_address_change_command_(uint8_t id_l, uint8_t id_h);
+  void publish_address_change_status_(const std::string &state);
+
+  enum AddressChangeState : uint8_t {
+    ADDRESS_CHANGE_IDLE = 0,
+    ADDRESS_CHANGE_ARMED,
+    ADDRESS_CHANGE_WAITING_RESPONSE,
+  };
 
   uint8_t address_[2] = {0xFE, 0xFE};
   std::vector<uint8_t> rx_buffer_;
   float target_position_;
+  AddressChangeState address_change_state_{ADDRESS_CHANGE_IDLE};
+  uint8_t address_change_pending_[2] = {0x00, 0x00};
+  uint32_t address_change_started_at_{0};
+#ifdef USE_TEXT
+  text::Text *address_change_text_{nullptr};
+#endif
 };
 
 }  // namespace dooya

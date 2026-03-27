@@ -26,5 +26,10 @@ void FactoryResetButton::press_action() {
   this->parent_->send_command(data, 2);
 }
 
+void ChangeAddressButton::press_action() {
+  ESP_LOGI(TAG, "Starting address change procedure");
+  this->parent_->handle_change_address_button_press();
+}
+
 }  // namespace dooya
 }  // namespace esphome

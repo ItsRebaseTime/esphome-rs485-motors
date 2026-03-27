@@ -25,10 +25,13 @@ DooyaButton = dooya_ns.class_(
 GetStatusButton = dooya_ns.class_("GetStatusButton", DooyaButton)
 ClearPositioningButton = dooya_ns.class_("ClearPositioningButton", DooyaButton)
 FactoryResetButton = dooya_ns.class_("FactoryResetButton", DooyaButton)
+ChangeAddressButton = dooya_ns.class_("ChangeAddressButton", DooyaButton)
 
 CONF_CLEAR_POSITIONING = "clear_positioning"
+CONF_CHANGE_ADDRESS = "change_address"
 CONF_GET_STATUS = "get_status"
 
+ICON_IDENTIFIER = "mdi:identifier"
 ICON_NUKE = "mdi:nuke"
 ICON_SYNC = "mdi:sync"
 
@@ -63,6 +66,12 @@ CONFIG_SCHEMA = cv.typed_schema(
             {
                 cv.GenerateID(): cv.declare_id(FactoryResetButton),
                 cv.Optional(CONF_ICON, default=ICON_NUKE): cv.icon,
+            }
+        ),
+        CONF_CHANGE_ADDRESS: _BUTTON_SCHEMA.extend(
+            {
+                cv.GenerateID(): cv.declare_id(ChangeAddressButton),
+                cv.Optional(CONF_ICON, default=ICON_IDENTIFIER): cv.icon,
             }
         ),
     }
