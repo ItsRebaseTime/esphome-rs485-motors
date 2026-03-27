@@ -44,7 +44,7 @@ Add the uart_multi component along with the devices you need to your ESPHome con
 
 ```yaml
 external_components:
-  - source: github://loongyh/esphome-rs485
+  - source: github://ItsRebaseTime/esphome-rs485-motors
     components: [ uart_multi, chenyang, dooya, ... ]
 ```
 
