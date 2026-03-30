@@ -131,6 +131,7 @@ cover:
   - platform: dooya
     name: Dooya Curtain
     address: 0xFEFE
+    status_update_interval: 1s
     device_class: curtain
 
 # Optional binary sensor for when curtain position is unknown on startup.

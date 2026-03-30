@@ -66,12 +66,21 @@ CoverTraits DooyaCover::get_traits() {
   return traits;
 }
 
+void DooyaCover::request_status_and_position_() {
+  for (uint8_t read_type : {GET_STATUS, GET_POSITION}) {
+    uint8_t data[3] = {READ, read_type, 0x01};
+    this->send_command(data, 3);
+    this->read_requests.push({read_type, millis()});
+  }
+}
+
 void DooyaCover::setup() {
   for (uint8_t read_type : {GET_STATUS, GET_POSITION, INVERT_DIRECTION, PULL_TO_START}) {
     uint8_t data[3] = {READ, read_type, 0x01};
     this->send_command(data, 3);
     this->read_requests.push({read_type, millis()});
   }
+  this->last_status_update_ = millis();
   this->publish_address_change_status_(
       "Idle. Enter target address as ID_L ID_H (for example: 42 43 or 4243), then press 'Change Address'.");
 }
@@ -117,11 +126,14 @@ void DooyaCover::control(const CoverCall &call) {
 
 void DooyaCover::send_update() {
   if (this->current_operation != COVER_OPERATION_IDLE) {
-    for (uint8_t read_type : {GET_STATUS, GET_POSITION}) {
-      uint8_t data[3] = {READ, read_type, 0x01};
-      this->send_command(data, 3);
-      this->read_requests.push({read_type, millis()});
-    }
+    this->request_status_and_position_();
+    this->last_status_update_ = millis();
+    return;
+  }
+
+  if (millis() - this->last_status_update_ >= this->status_update_interval_) {
+    this->request_status_and_position_();
+    this->last_status_update_ = millis();
   }
 }
 

@@ -81,6 +81,7 @@ class DooyaCover : public cover::Cover, public Component, public uart_multi::UAR
   void on_uart_multi_byte(uint8_t byte) override;
   cover::CoverTraits get_traits() override;
   void send_command(const uint8_t *data, uint8_t len);
+  void set_status_update_interval(uint32_t interval) { this->status_update_interval_ = interval; }
   void handle_change_address_button_press();
 #ifdef USE_TEXT
   void set_address_change_text(text::Text *text) { this->address_change_text_ = text; }
@@ -93,6 +94,7 @@ class DooyaCover : public cover::Cover, public Component, public uart_multi::UAR
   void process_read_response_();
   void process_write_response_();
   void process_control_response_();
+  void request_status_and_position_();
   bool parse_address_change_input_(uint8_t &id_l, uint8_t &id_h, std::string &error) const;
   void send_address_change_command_(uint8_t id_l, uint8_t id_h);
   void publish_address_change_status_(const std::string &state);
@@ -106,6 +108,8 @@ class DooyaCover : public cover::Cover, public Component, public uart_multi::UAR
   uint8_t address_[2] = {0xFE, 0xFE};
   std::vector<uint8_t> rx_buffer_;
   float target_position_;
+  uint32_t status_update_interval_{10000};
+  uint32_t last_status_update_{0};
   AddressChangeState address_change_state_{ADDRESS_CHANGE_IDLE};
   uint8_t address_change_pending_[2] = {0x00, 0x00};
   uint32_t address_change_started_at_{0};

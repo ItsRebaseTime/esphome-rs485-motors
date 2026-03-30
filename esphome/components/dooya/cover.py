@@ -7,6 +7,7 @@ CODEOWNERS = ["@loongyh"]
 AUTO_LOAD = ["uart_multi"]
 
 CONF_DOOYA_ID = "dooya_id"
+CONF_STATUS_UPDATE_INTERVAL = "status_update_interval"
 
 dooya_ns = cg.esphome_ns.namespace("dooya")
 DooyaCover = dooya_ns.class_("DooyaCover", cover.Cover, cg.Component, uart_multi.UARTMultiDevice)
@@ -16,6 +17,7 @@ CONFIG_SCHEMA = (
     .extend(
         {
             cv.Optional(CONF_ADDRESS): cv.hex_uint16_t,
+            cv.Optional(CONF_STATUS_UPDATE_INTERVAL, default="1s"): cv.positive_time_period_milliseconds,
         }
     )
     .extend(uart_multi.UART_MULTI_DEVICE_SCHEMA)
@@ -29,3 +31,5 @@ async def to_code(config):
 
     if CONF_ADDRESS in config:
         cg.add(var.set_address(config[CONF_ADDRESS]))
+
+    cg.add(var.set_status_update_interval(config[CONF_STATUS_UPDATE_INTERVAL]))
